@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Updated Font Awesome CDN link -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" xintegrity="sha512-KfkfwYDsLkIlwQp6LF8yO7zP9T1+b7e6R9f+r9eH3r9/r0pC6j7QfD5l3rB6qjYf+l0D5E5L+b6eH5zD7e1+w==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha384-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F7F9;
+            color: #4A5568;
+        }
+
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            min-height: 100vh;
+            background-color: #F4F7F9;
+        }
+
+        .sidebar {
+            background-color: #fff;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar-nav-item {
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #6B7280;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav-item i {
+            margin-right: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-nav-item.active {
+            background-color: #7155D9;
+            color: #fff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        .sidebar-nav-item.active .icon {
+            color: #fff;
+        }
+
+        .main-content {
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .right-sidebar {
+            background-color: #fff;
+            padding: 24px;
+        }
+        
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+        }
+
+        .info-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .info-card .icon-bg {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .info-card .icon-bg i {
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .line-chart-container {
+            width: 100%;
+            height: 300px;
+        }
+
+        .donut-chart-container {
+            width: 100%;
+            height: 250px;
+        }
+        
+        .task-list-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background-color: #F8F9FB;
+        }
+        .task-list-item h3 {
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            height: 8px;
+            background-color: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .working-status-circle {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+        .working-status-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+        }
+        .calendar-day {
+            padding: 8px;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+        .calendar-day.active {
+            background-color: #7155D9;
+            color: #fff;
+            font-weight: 600;
+        }
+        .calendar-day.inactive {
+            color: #9CA3AF;
+        }
+        .calendar-day:not(.inactive):hover {
+            background-color: #E2EAF8;
+        }
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #7155D9;
+            border-radius: 50%;
+        }
+
+        .upcoming-task {
+            padding: 16px;
+            border-left: 4px solid;
+            border-radius: 4px;
+            background-color: #F8F9FB;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 32px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .modal-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .edit-btn, .delete-btn {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .edit-btn {
+            background-color: #E2EAF8;
+            color: #7155D9;
+        }
+        .delete-btn {
+            background-color: #dc2626; /* Darker red */
+            color: #fff; /* White text for contrast */
+        }
+        .edit-btn:hover {
+            background-color: #d1d9ec;
+        }
+        .delete-btn:hover {
+            background-color: #b91c1c; /* Even darker red for hover */
+        }
+        .modal-title-add { display: block; }
+        .modal-title-edit { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div>
+            <div class="mb-8">
+                <div class="text-3xl font-bold text-[#7155D9]" id="welcome-message">HIRE L!NK</div>
+            </div>
+            <!-- Navigation links with classes for JS targeting -->
+            <nav class="space-y-2" id="sidebar-nav">
+                <a href="#" class="sidebar-nav-item active" data-nav="dashboard">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="myjobs.html" class="sidebar-nav-item" data-nav="myjobs">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>My Jobs</span>
+                </a>
+                <a href="postjobs.html" class="sidebar-nav-item" data-nav="postjobs">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Post Jobs</span>
+                </a>
+                <a href="applications.html" class="sidebar-nav-item" data-nav="applications">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Applications</span>
+                </a>
+                <a href="candidatesanalytics.html" class="sidebar-nav-item" data-nav="candidatesanalytics">
+                    <i class="fa-solid fa-suitcase"></i>
+                    <span>Candidate Analytics</span>
+                </a>
+                <a href="talentpool.html" class="sidebar-nav-item" data-nav="talentpool">
+                    <i class="fa-solid fa-envelope"></i>
+                    <span>Talent Pool</span>
+                </a>
+                <a href="settings.html" class="sidebar-nav-item" data-nav="setting">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Setting</span>
+                </a>
+            </nav>
+        </div>
+        </aside>
+
+    <main class="main-content">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                <!-- Dynamic date display -->
+                <p id="dashboard-date" class="text-gray-500 text-sm">13 March 2021</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search" class="pl-10 pr-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-200 w-64 text-sm">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-6 flex items-center justify-between mb-6" style="background-color: #F8F7FF;">
+            <div>
+                <h2 class="text-xl font-bold mb-2 text-[#7155D9]">Intelligent Candidate Tracking
+for Smarter Hiring Decisions</h2>
+                <p class="text-sm text-gray-600 mb-4 max-w-sm">Leverage automation and analytics to match top talent with the right roles—fast, accurate, and bias-free.</p>
+                <button class="bg-[#7155D9] text-white py-2 px-4 rounded-xl font-medium text-sm">Learn More</button>
+            </div>
+            <!-- <div>
+                <img src="https://placehold.co/200x200/F8F7FF/7155D9?text=Illustration" alt="Illustration" class="w-48 h-48">
+            </div> -->
+        </div>
+
+        <div class="grid grid-cols-4 gap-6 mb-6">
+            <div class="info-card" style="background-color: #E8F0FF;">
+                <div class="icon-bg" style="background-color: #7199FF;"><i class="fa-solid fa-list-check"></i></div>
+                <div class="text-2xl font-bold">3</div>
+                <p class="text-sm text-gray-500">Active Jobs</p>
+            </div>
+            
+            <div class="info-card" style="background-color: #E2EAF8;">
+                <div class="icon-bg" style="background-color: #7155D9;"><i class="fa-solid fa-spinner"></i></div>
+                <div class="text-2xl font-bold">07</div>
+                <p class="text-sm text-gray-500">In Progress</p>
+            </div>
+            <div class="info-card" style="background-color: #FCE1E8;">
+                <div class="icon-bg" style="background-color: #F472B6;"><i class="fa-solid fa-clock"></i></div>
+                <div class="text-2xl font-bold">43</div>
+                <p class="text-sm text-gray-500">Pending</p>
+            </div>
+            <div class="info-card" style="background-color: #E4F9ED;">
+                <div class="icon-bg" style="background-color: #10B981;"><i class="fa-solid fa-check"></i></div>
+                <div class="text-2xl font-bold">1550</div>
+                <p class="text-sm text-gray-500">Applications</p>
+            </div>
+        </div>
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 mb-6">
+    <div class="table-container">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Job Title</th>
+                </tr>
+            </thead>
+            <tbody id="jobsTableBody" class="bg-white divide-y divide-gray-200">
+            </tbody>
+        </table>
+        <div id="noJobsMessage" class="hidden text-center py-8 text-gray-500 text-lg">
+            No jobs found.
+        </div>
+    </div>
+</div>
+<div class="grid grid-cols-2 gap-6 mb-6">
+    <div class="card">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Job Postings Over Time</h2>
+            <select class="border rounded-md px-2 py-1 text-sm bg-gray-50">
+                <option>6 week</option>
+                <option>1 month</option>
+            </select>
+        </div>
+        <div class="line-chart-container">
+            <svg id="line-chart"></svg>
+        </div>
+    </div>
+    <div class="card">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold">Job Distribution by Category</h2>
+        </div>
+        <div class="donut-chart-container flex items-center justify-center">
+            <svg id="donut-chart"></svg>
+        </div>
+    </div>
+</div>
+
+        <div class="grid grid-cols-2 gap-6">
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">Recruitment Task Progress</h2>
+                <div class="task-list-item">
+                    <div class="flex-1">
+                        <h3 class="text-base text-gray-800">Jobs per Location</h3>
+                        <p class="text-xs text-gray-500">60% Mumbai</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 80%; background-color: #7155D9;"></div>
+                        </div>
+                    </div>
+                    </div>
+                <div class="task-list-item">
+                    <div class="flex-1">
+                        <h3 class="text-base text-gray-800">Applications per Job Post</h3>
+                        <p class="text-xs text-gray-500">30% Data Analyst</p>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 30%; background-color: #F472B6;"></div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+            <div class="card">
+                <h2 class="text-xl font-bold mb-4">Job Status Breakdown</h2>
+                <div class="flex items-center justify-center">
+                    <div class="working-status-circle">
+                        <svg width="150" height="150">
+                            <circle class="bg-circle" cx="75" cy="75" r="70" stroke-width="8" fill="none" stroke="#E2E8F0"></circle>
+                            <circle class="progress-circle" cx="75" cy="75" r="70" stroke-width="8" fill="none" stroke="#7155D9" transform="rotate(-90 75 75)"></circle>
+                        </svg>
+                        <div class="working-status-text">70%</div>
+                    </div>
+                </div>
+                <!-- <p class="text-center mt-4 text-sm text-gray-500">Member Working</p> -->
+            </div>
+        </div>
+    </main>
+
+    <aside class="right-sidebar">
+        <div class="flex items-center justify-between mb-4 calendar-header">
+            <button class="text-gray-500 p-2 rounded-full hover:bg-gray-100" id="prev-month-btn"><i class="fa-solid fa-chevron-left"></i></button>
+            <div id="calendar-month-year" class="font-semibold text-lg text-gray-800"></div>
+            <button class="text-gray-500 p-2 rounded-full hover:bg-gray-100" id="next-month-btn"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="calendar-grid mb-6" id="calendar-grid">
+            <!-- Calendar days will be generated by JS -->
+            <div class="font-semibold text-gray-800">Su</div>
+            <div class="font-semibold text-gray-800">Mo</div>
+            <div class="font-semibold text-gray-800">Tu</div>
+            <div class="font-semibold text-gray-800">We</div>
+            <div class="font-semibold text-gray-800">Th</div>
+            <div class="font-semibold text-gray-800">Fr</div>
+            <div class="font-semibold text-gray-800">Sa</div>
+        </div>
+
+        <div class="mb-4">
+            <button class="bg-[#7155D9] text-white py-2 px-4 rounded-xl w-full flex items-center justify-center space-x-2 font-semibold" id="add-task-btn">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add New Task</span>
+            </button>
+        </div>
+
+        <div>
+            <h3 class="text-lg font-bold mb-4">Upcoming</h3>
+            <!-- Dynamic upcoming task date display -->
+            <p id="upcoming-task-date" class="text-sm text-gray-500 mb-4"></p>
+            
+            <div id="upcoming-events-list">
+                <!-- Upcoming events will be generated here by JS -->
+            </div>
+        </div>
+    </aside>
+</div>
+
+<!-- Event Modal -->
+<div id="event-modal" class="modal">
+    <div class="modal-content">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 modal-title-add">Add Event</h3>
+        <h3 class="text-xl font-bold text-gray-800 mb-4 modal-title-edit">Edit Event</h3>
+        <form id="event-form">
+            <input type="hidden" id="event-index">
+            <input type="text" id="event-name" placeholder="Event Name" class="modal-input" required>
+            <input type="text" id="event-date" class="modal-input" readonly>
+            <input type="time" id="event-time" class="modal-input" required>
+            <textarea id="event-description" placeholder="Optional Description" rows="3" class="modal-input"></textarea>
+            <div class="flex justify-end space-x-4 mt-4">
+                <button type="button" id="cancel-event-btn" class="py-2 px-4 rounded-xl text-gray-600 font-medium">Cancel</button>
+                <button type="submit" class="bg-[#7155D9] text-white py-2 px-4 rounded-xl font-medium">Save Event</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Sidebar Navigation Active State Logic ---
+        const navItems = document.querySelectorAll('.sidebar-nav-item');
+
+        // Get the element where the welcome message will be displayed
+        const welcomeMessageElement = document.getElementById('welcome-message');
+
+        // Get the username from localStorage
+        const username = localStorage.getItem('username') || "User";
+        if (welcomeMessageElement) {
+            welcomeMessageElement.textContent = `Hi, ${username}`;
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+        
+        // --- Function to Render Jobs ---
+        function renderJobs() {
+        const jobsTableBody = document.getElementById('jobsTableBody');
+        const noJobsMessage = document.getElementById('noJobsMessage');
+        jobsTableBody.innerHTML = '';
+
+        const jobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+
+        // Get the active jobs count element
+        const activeJobsCountElement = document.querySelector('.info-card .text-2xl');
+        if (activeJobsCountElement) {
+            // Update the count based on the number of jobs in localStorage
+            activeJobsCountElement.textContent = jobs.length;
+        }
+
+        if (jobs.length === 0) {
+            if (noJobsMessage) {
+                noJobsMessage.classList.remove('hidden');
+            }
+            return;
+        } else {
+            if (noJobsMessage) {
+                noJobsMessage.classList.add('hidden');
+            }
+        }
+        
+        jobs.slice(0, 4).forEach(job => {
+            const row = document.createElement('tr');
+            row.className = 'table-row-hover';
+
+            const createdDate = new Date(job.id).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric'
+            });
+
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${createdDate}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <a href="#" onclick="showJobDetails(event, '${job.id}')" class="text-gray-900 font-semibold hover:text-purple hover:underline">${job.jobTitle}</a>
+                </td>
+            `;
+            jobsTableBody.appendChild(row);
+        });
+    }
+
+        // Call the renderJobs function here after it's defined.
+        renderJobs();
+
+        // --- Dynamic Date & Calendar Logic ---
+        const dashboardDateElement = document.getElementById('dashboard-date');
+        const upcomingTaskDateElement = document.getElementById('upcoming-task-date');
+        const calendarMonthYearElement = document.getElementById('calendar-month-year');
+        const calendarGrid = document.getElementById('calendar-grid');
+        const prevMonthBtn = document.getElementById('prev-month-btn');
+        const nextMonthBtn = document.getElementById('next-month-btn');
+
+        let currentDate = new Date();
+        const today = new Date();
+        let selectedDate = new Date(); // This will track the currently selected date
+
+        const optionsDashboard = { year: 'numeric', month: 'long', day: 'numeric' };
+        const optionsUpcoming = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+        // Event Modal Elements
+        const eventModal = document.getElementById('event-modal');
+        const eventForm = document.getElementById('event-form');
+        const eventNameInput = document.getElementById('event-name');
+        const eventDateInput = document.getElementById('event-date');
+        const eventTimeInput = document.getElementById('event-time');
+        const eventDescriptionInput = document.getElementById('event-description');
+        const eventIndexInput = document.getElementById('event-index');
+        const modalTitleAdd = document.querySelector('.modal-title-add');
+        const modalTitleEdit = document.querySelector('.modal-title-edit');
+        const cancelEventBtn = document.getElementById('cancel-event-btn');
+        const upcomingEventsList = document.getElementById('upcoming-events-list');
+        const addTaskBtn = document.getElementById('add-task-btn');
+
+        let events = JSON.parse(localStorage.getItem('events')) || {};
+
+        // Function to render the calendar grid
+        function renderCalendar(date) {
+            // Clear previous calendar days (except the day labels)
+            while (calendarGrid.children.length > 7) {
+                calendarGrid.removeChild(calendarGrid.lastChild);
+            }
+
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const firstDayOfMonth = new Date(year, month, 1);
+            const lastDayOfMonth = new Date(year, month + 1, 0);
+            const firstDayOfWeek = firstDayOfMonth.getDay();
+
+            calendarMonthYearElement.textContent = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < firstDayOfWeek; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('calendar-day', 'inactive');
+                calendarGrid.appendChild(dayDiv);
+            }
+
+            // Add the days of the current month
+            for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.classList.add('calendar-day');
+                dayDiv.textContent = i;
+                const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                dayDiv.dataset.date = fullDate;
+
+                // Highlight the selected date
+                const selectedDateFormatted = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+                if (fullDate === selectedDateFormatted) {
+                    dayDiv.classList.add('active');
+                }
+
+                // Add event indicator if there are events for this date
+                if (events[fullDate] && events[fullDate].length > 0) {
+                    dayDiv.classList.add('has-event');
+                }
+
+                dayDiv.addEventListener('click', () => {
+                    const previouslySelected = document.querySelector('.calendar-day.active');
+                    if (previouslySelected) {
+                        previouslySelected.classList.remove('active');
+                    }
+                    dayDiv.classList.add('active');
+                    // Update the selectedDate variable to the new clicked date
+                    selectedDate = new Date(year, month, i);
+                    renderUpcomingEvents(selectedDate);
+                });
+
+                calendarGrid.appendChild(dayDiv);
+            }
+        }
+
+        // Function to render the upcoming events for a specific date
+        function renderUpcomingEvents(date) {
+            upcomingEventsList.innerHTML = '';
+            const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            const dateText = date.toLocaleDateString('en-US', optionsUpcoming);
+            upcomingTaskDateElement.textContent = dateText;
+            const dayEvents = events[formattedDate] || [];
+
+            if (dayEvents.length > 0) {
+                dayEvents.sort((a, b) => {
+                    const timeA = a.time.split(':').map(Number);
+                    const timeB = b.time.split(':').map(Number);
+                    if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
+                    return timeA[1] - timeB[1];
+                });
+
+                dayEvents.forEach((event, index) => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.classList.add('upcoming-task', 'border-purple-500'); // Consistent color for now
+                    taskDiv.innerHTML = `
+                        <div>
+                            <h4 class="font-semibold text-sm text-gray-800">${event.name}</h4>
+                            <p class="text-xs text-gray-500">${event.time}${event.description ? ' - ' + event.description : ''}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="edit-btn" data-index="${index}">Edit</button>
+                            <button class="delete-btn" data-index="${index}">
+                                <i class="fa-solid fa-times" data-index="${index}"></i>
+                            </button>
+                        </div>
+                    `;
+                    upcomingEventsList.appendChild(taskDiv);
+                });
+            } else {
+                const noEventDiv = document.createElement('p');
+                noEventDiv.classList.add('text-sm', 'text-gray-500', 'text-center');
+                noEventDiv.textContent = 'No events scheduled for this day.';
+                upcomingEventsList.appendChild(noEventDiv);
+            }
+        }
+
+        // Handle edit and delete button clicks using event delegation
+        upcomingEventsList.addEventListener('click', (e) => {
+            const editButton = e.target.closest('.edit-btn');
+            const deleteButton = e.target.closest('.delete-btn');
+            const formattedDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+
+            if (editButton) {
+                const index = editButton.dataset.index;
+                const eventToEdit = events[formattedDate][index];
+
+                // Populate modal with event data
+                eventNameInput.value = eventToEdit.name;
+                eventDateInput.value = formattedDate;
+                eventTimeInput.value = eventToEdit.time;
+                eventDescriptionInput.value = eventToEdit.description;
+                eventIndexInput.value = index;
+
+                // Show the modal in edit mode
+                modalTitleAdd.style.display = 'none';
+                modalTitleEdit.style.display = 'block';
+                eventModal.style.display = 'flex';
+            } else if (deleteButton) {
+                const index = deleteButton.dataset.index;
+
+                // Remove the event from the array
+                events[formattedDate].splice(index, 1);
+
+                // If the day no longer has events, remove the key from the object
+                if (events[formattedDate].length === 0) {
+                    delete events[formattedDate];
+                }
+
+                localStorage.setItem('events', JSON.stringify(events));
+
+                // Re-render the calendar and upcoming events to reflect the change
+                renderCalendar(currentDate);
+                renderUpcomingEvents(selectedDate);
+            }
+        });
+
+        // Initial rendering on page load
+        dashboardDateElement.textContent = today.toLocaleDateString('en-US', optionsDashboard);
+        renderCalendar(currentDate);
+        renderUpcomingEvents(selectedDate);
+
+        // Calendar month navigation
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            // Update the selected date to match the new month, keeping the same day of the month
+            selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), selectedDate.getDate());
+            // Make sure the selected day exists in the new month
+            if (selectedDate.getMonth() !== currentDate.getMonth()) {
+                selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            }
+            renderCalendar(currentDate);
+            renderUpcomingEvents(selectedDate);
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            // Update the selected date to match the new month, keeping the same day of the month
+            selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), selectedDate.getDate());
+            // Make sure the selected day exists in the new month
+            if (selectedDate.getMonth() !== currentDate.getMonth()) {
+                selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            }
+            renderCalendar(currentDate);
+            renderUpcomingEvents(selectedDate);
+        });
+
+        // Add New Task button functionality
+        addTaskBtn.addEventListener('click', () => {
+            const selectedDateFormatted = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+            eventDateInput.value = selectedDateFormatted;
+            // Clear other inputs for new event
+            eventNameInput.value = '';
+            eventTimeInput.value = '';
+            eventDescriptionInput.value = '';
+            eventIndexInput.value = ''; // Clear index for new event
+            modalTitleAdd.style.display = 'block';
+            modalTitleEdit.style.display = 'none';
+            eventModal.style.display = 'flex';
+        });
+
+        // Event Modal functionality
+        cancelEventBtn.addEventListener('click', () => {
+            eventModal.style.display = 'none';
+        });
+
+        eventForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const eventName = eventNameInput.value;
+            const eventDate = eventDateInput.value;
+            const eventTime = eventTimeInput.value;
+            const eventDescription = eventDescriptionInput.value;
+            const eventIndex = eventIndexInput.value;
+
+            const newEvent = {
+                name: eventName,
+                time: eventTime,
+                description: eventDescription,
+            };
+
+            if (eventIndex !== '') {
+                // It's an edit, update the event
+                events[eventDate][eventIndex] = newEvent;
+            } else {
+                // It's a new event, add it
+                if (!events[eventDate]) {
+                    events[eventDate] = [];
+                }
+                events[eventDate].push(newEvent);
+            }
+
+            localStorage.setItem('events', JSON.stringify(events));
+
+            eventModal.style.display = 'none';
+            eventForm.reset();
+            renderCalendar(currentDate);
+            renderUpcomingEvents(selectedDate);
+        });
+
+        // --- D3.js Line Chart ---
+        const lineChartData = [
+            { month: 'Jan', tasks: 30 },
+            { month: 'Feb', tasks: 45 },
+            { month: 'Mar', tasks: 60 },
+            { month: 'Apr', tasks: 50 },
+            { month: 'May', tasks: 72 },
+            { month: 'Jun', tasks: 65 },
+        ];
+
+        const lineChartContainer = document.querySelector('.line-chart-container');
+        const lineSvgWidth = lineChartContainer.clientWidth;
+        const lineSvgHeight = 300;
+        const lineMargin = { top: 20, right: 20, bottom: 30, left: 40 };
+        const lineChartWidth = lineSvgWidth - lineMargin.left - lineMargin.right;
+        const lineChartHeight = lineSvgHeight - lineMargin.top - lineMargin.bottom;
+
+        const lineSvg = d3.select("#line-chart")
+            .attr("width", lineSvgWidth)
+            .attr("height", lineSvgHeight)
+            .append("g")
+            .attr("transform", `translate(${lineMargin.left},${lineMargin.top})`);
+
+        const xLine = d3.scalePoint()
+            .range([0, lineChartWidth])
+            .padding(0.5)
+            .domain(lineChartData.map(d => d.month));
+
+        const yLine = d3.scaleLinear()
+            .range([lineChartHeight, 0])
+            .domain([0, d3.max(lineChartData, d => d.tasks)]);
+
+        lineSvg.append("g")
+            .attr("transform", `translate(0,${lineChartHeight})`)
+            .call(d3.axisBottom(xLine).tickSize(0).tickPadding(10))
+            .selectAll("path")
+            .attr("stroke", "transparent");
+
+        lineSvg.append("g")
+            .call(d3.axisLeft(yLine).ticks(6).tickSize(-lineChartWidth).tickFormat(d => d))
+            .selectAll("path, line")
+            .attr("stroke", "#E2E8F0");
+        lineSvg.selectAll(".tick text").attr("fill", "#9CA3AF");
+
+        const line = d3.line()
+            .x(d => xLine(d.month))
+            .y(d => yLine(d.tasks))
+            .curve(d3.curveMonotoneX);
+
+        lineSvg.append("path")
+            .datum(lineChartData)
+            .attr("fill", "none")
+            .attr("stroke", "#7155D9")
+            .attr("stroke-width", 3)
+            .attr("d", line);
+
+        // --- D3.js Donut Chart ---
+        const donutData = [
+            { name: 'Running Task', value: 1220, color: '#7155D9' },
+            { name: 'Pending', value: 43, color: '#F472B6' },
+            { name: 'Completed', value: 1550, color: '#10B981' },
+        ];
+
+        const donutSvgWidth = 250;
+        const donutSvgHeight = 250;
+        const radius = Math.min(donutSvgWidth, donutSvgHeight) / 2 - 10;
+        const innerRadius = radius * 0.7;
+
+        const donutSvg = d3.select("#donut-chart")
+            .attr("width", donutSvgWidth)
+            .attr("height", donutSvgHeight)
+            .append("g")
+            .attr("transform", `translate(${donutSvgWidth / 2},${donutSvgHeight / 2})`);
+
+        const pie = d3.pie()
+            .sort(null)
+            .value(d => d.value);
+
+        const arc = d3.arc()
+            .innerRadius(innerRadius)
+            .outerRadius(radius);
+
+        const arcs = donutSvg.selectAll("arc")
+            .data(pie(donutData))
+            .enter()
+            .append("g");
+
+        arcs.append("path")
+            .attr("d", arc)
+            .attr("fill", d => d.data.color);
+
+        // --- Working Status Circle ---
+        const progressCircle = document.querySelector('.progress-circle');
+        const radiusCircle = 70;
+        const circumference = 2 * Math.PI * radiusCircle;
+        const percentage = 70;
+        const offset = circumference - (percentage / 100) * circumference;
+        progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+        progressCircle.style.strokeDashoffset = offset;
+        progressCircle.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
+    });
+</script>
+</body>
+</html>

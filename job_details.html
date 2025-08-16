@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Details</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        .job-detail-card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            padding: 2.5rem; /* p-10 */
+        }
+        .section-heading {
+            color: #1f2937; /* gray-900 */
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 1rem; /* mb-4 */
+            border-bottom: 2px solid #e5e7eb; /* border-b-2 border-gray-200 */
+            padding-bottom: 0.5rem; /* pb-2 */
+        }
+        .detail-item {
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+        .detail-label {
+            font-weight: 600; /* font-semibold */
+            color: #4b5563; /* gray-700 */
+        }
+        .detail-value {
+            color: #1f2937; /* gray-900 */
+        }
+        .apply-button {
+            background-color: #2563eb; /* blue-700 */
+            color: white;
+            font-weight: 700; /* font-bold */
+            padding: 1rem 2rem; /* py-4 px-8 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition: background-color 0.3s ease;
+            display: inline-block; /* Allows padding and margin */
+            text-align: center;
+            text-decoration: none;
+            margin-top: 2rem; /* mt-8 */
+        }
+        .apply-button:hover {
+            background-color: #1d4ed8; /* blue-800 */
+        }
+        .not-found-message {
+            text-align: center;
+            color: #ef4444; /* red-500 */
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 4rem;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 1.25rem; /* ml-5 */
+            padding-left: 0;
+        }
+        ul li {
+            margin-bottom: 0.25rem; /* mb-1 */
+            color: #374151; /* gray-700 */
+        }
+        /* Basic responsive adjustments */
+        @media (max-width: 768px) {
+            .job-detail-card {
+                padding: 1.5rem;
+            }
+            .section-heading {
+                font-size: 1.25rem;
+            }
+            .apply-button {
+                padding: 0.75rem 1.5rem;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="container max-w-4xl mx-auto">
+        <div id="jobDetailsContent" class="job-detail-card hidden">
+            <h1 id="jobTitle" class="text-4xl font-extrabold text-gray-900 mb-6 text-center"></h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mb-8">
+                <div class="detail-item"><span class="detail-label">Industry:</span> <span id="jobIndustry" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Category:</span> <span id="jobCategory" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Functional Area:</span> <span id="jobFunctionalArea" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Employment Type:</span> <span id="jobEmploymentType" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Experience:</span> <span id="jobExperience" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Salary (CTC):</span> <span id="jobSalary" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Location:</span> <span id="jobLocation" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Candidate Profile:</span> <span id="jobCandidateProfile" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Graduating Year:</span> <span id="jobGraduatingYear" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Course Type:</span> <span id="jobCourseType" class="detail-value"></span></div>
+                <div class="detail-item"><span class="detail-label">Preferred Candidates:</span> <span id="jobPreferred" class="detail-value"></span></div>
+            </div>
+
+            <h2 class="section-heading">Job Description</h2>
+            <div id="jobDescription" class="text-gray-800 leading-relaxed mb-8"></div>
+
+            <div class="text-center">
+                <a href="career.html" class="apply-button">Apply Now</a>
+            </div>
+        </div>
+
+        <div id="jobNotFound" class="not-found-message hidden">
+            <p>Oops! Job not found. Please check the link or try again.</p>
+            <a href="myjobs.html" class="apply-button mt-4 bg-gray-600 hover:bg-gray-700">Back to My Jobs</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const jobId = urlParams.get('id');
+
+            const jobDetailsContent = document.getElementById('jobDetailsContent');
+            const jobNotFound = document.getElementById('jobNotFound');
+            
+            // Function to convert simple markdown to HTML
+            function formatDescription(text) {
+    if (!text) return '';
+
+    // Replace <br> with newlines and remove other HTML tags for matching
+    let cleanText = text.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<[^>]*>/g, '');
+
+    const lines = cleanText.split('\n');
+    let formattedHtml = '';
+    let inList = false;
+
+    // Case-insensitive match for the 5 headings, with optional colon
+    const headingRegex = /^(Job Overview|Key Responsibilities|Qualifications and Skills|Benefits|Suggested Tags)\s*:?\s*$/i;
+
+    lines.forEach(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return; // skip empty lines
+
+        // Bullet or numbered list
+        if (trimmedLine.startsWith('- ') || /^\d+\.\s/.test(trimmedLine)) {
+            if (!inList) {
+                formattedHtml += '<ul>';
+                inList = true;
+            }
+            formattedHtml += `<li>${trimmedLine.substring(trimmedLine.indexOf(' ') + 1)}</li>`;
+        } else {
+            if (inList) {
+                formattedHtml += '</ul>';
+                inList = false;
+            }
+
+            // Heading match
+            if (headingRegex.test(trimmedLine)) {
+                const headingText = trimmedLine.replace(/:$/, '');
+                formattedHtml += `<h3 class="font-bold text-xl mt-8 mb-4">${headingText}</h3>`;
+            } else {
+                // Normal paragraph
+                let paragraph = trimmedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                formattedHtml += `<p class="mb-4">${paragraph}</p>`;
+            }
+        }
+    });
+
+    if (inList) {
+        formattedHtml += '</ul>';
+    }
+    return formattedHtml;
+}
+
+
+
+
+            if (jobId) {
+                // IMPORTANT: This line is what actually loads the data
+                // In a real app, you would have a list of jobs in localStorage.
+                const jobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+                const job = jobs.find(j => j.id === parseInt(jobId, 10));
+
+                if (job) {
+                    document.getElementById('jobTitle').textContent = job.jobTitle;
+                    document.getElementById('jobIndustry').textContent = job.targetingIndustry.join(', ');
+                    document.getElementById('jobCategory').textContent = job.category;
+                    document.getElementById('jobFunctionalArea').textContent = job.functionalArea;
+                    document.getElementById('jobEmploymentType').textContent = job.employmentType;
+                    document.getElementById('jobExperience').textContent = `${job.minExperience} - ${job.maxExperience} years`;
+                    document.getElementById('jobSalary').textContent = `₹${job.minCTC} - ₹${job.maxCTC}`;
+                    document.getElementById('jobLocation').textContent = job.location;
+                    document.getElementById('jobCandidateProfile').textContent = job.candidateProfile;
+                    document.getElementById('jobGraduatingYear').textContent = `${job.minGradYear} - ${job.maxGradYear}`;
+                    document.getElementById('jobCourseType').textContent = job.courseType;
+                    document.getElementById('jobPreferred').textContent = job.preferred || 'Not specified';
+
+                    const jobDescriptionDiv = document.getElementById('jobDescription');
+                    jobDescriptionDiv.innerHTML = formatDescription(job.jobDescription);
+
+                    jobDetailsContent.classList.remove('hidden');
+                } else {
+                    jobNotFound.classList.remove('hidden');
+                }
+            } else {
+                jobNotFound.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

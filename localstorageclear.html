@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Local Storage</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+    <div class="p-8 bg-white rounded-lg shadow-xl text-center max-w-sm">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4">Clear All Local Storage Data</h1>
+        <p class="text-gray-600 mb-6">
+            Clicking this button will permanently delete all data stored in your browser's local storage for this page. This action cannot be undone.
+        </p>
+        <button 
+            id="clear-button" 
+            class="px-6 py-3 bg-red-600 text-white font-medium rounded-lg shadow-md hover:bg-red-700 transition-colors duration-300">
+            Clear Local Storage
+        </button>
+        <p id="status-message" class="mt-4 text-sm font-medium text-green-600 hidden">
+            Local storage has been cleared.
+        </p>
+    </div>
+    <script>
+        document.getElementById('clear-button').addEventListener('click', () => {
+            // The command to clear all local storage data for this domain
+            localStorage.clear();
+            
+            // Show a success message
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.classList.remove('hidden');
+            statusMessage.textContent = 'Local storage has been cleared successfully!';
+            
+            console.log("Local storage has been cleared.");
+            
+            // Optional: You can also reset the message after a few seconds
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

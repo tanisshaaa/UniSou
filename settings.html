@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Settings</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F4F7F9; /* Updated background color from dashboard image */
+        }
+        /* Custom colors and styles */
+        .primary-purple {
+            background-color: #7B68EE;
+        }
+        .primary-purple-hover {
+            background-color: #6a5ac1;
+        }
+        .text-purple {
+            color: #7B68EE;
+        }
+        .bg-light-purple {
+            background-color: #9370DB;
+        }
+        .bg-card {
+            background-color: #FFFFFF;
+        }
+        .table-row-hover:hover {
+            background-color: #F8F8F8;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem 0;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            color: #4B5563;
+            transition: all 0.2s;
+        }
+        .sidebar-item:hover {
+            background-color: #E5E7EB;
+        }
+        .sidebar-item.active {
+            background-color: #7B68EE;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar-item.active:hover {
+            background-color: #6a5ac1;
+        }
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(0);
+            opacity: 1;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        .modal-overlay.hidden .modal-container {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        
+        /* Responsive table behavior (not directly used on this page, but good to keep for consistency) */
+        @media (max-width: 768px) {
+            .table-container {
+                overflow-x: auto;
+            }
+            .min-w-full {
+                width: 768px; /* Maintain a minimum width to prevent columns from collapsing */
+            }
+        }
+
+        /* Custom classes for consistent button styling */
+        .btn-primary {
+            background-color: #7155D9; /* Primary purple from dashboard */
+            color: white;
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+        }
+        .btn-primary:hover {
+            background-color: #6148C0; /* Darker shade for hover */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col md:flex-row min-h-screen">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-white p-6 shadow-md md:rounded-tr-xl md:rounded-br-xl flex flex-col justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-8">HIRE L!NK</h1>
+            <nav>
+                <ul>
+                    <li><a href="dashboard.html" class="sidebar-item">Dashboard</a></li>
+                    <li><a href="myjobs.html" class="sidebar-item">My Jobs</a></li>
+                    <li><a href="postjobs.html" class="sidebar-item">Post Jobs</a></li>
+                    <li><a href="applications.html" class="sidebar-item">Applications</a></li>
+                    <li><a href="candidatesanalytics.html" class="sidebar-item">Candidate Analytics</a></li>
+                    <li><a href="talentpool.html" class="sidebar-item">Talent Pool</a></li>
+                    <li><a href="settings.html" class="sidebar-item active">Setting</a></li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-4 md:p-8 flex flex-col items-end">
+        <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 w-full max-w-4xl border border-gray-200">
+
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-extrabold text-gray-900">Account Settings</h1>
+                <p class="mt-2 text-lg text-gray-500">Manage your recruiter profile and company details.</p>
+            </div>
+
+            <!-- Organization Logo Upload Section - Moved to top and centered -->
+            <div class="mb-8 flex flex-col items-center">
+                <img id="organization-logo-display" src="https://placehold.co/120x120/E5E7EB/4B5563?text=Logo" alt="Organization Logo" class="w-32 h-32 object-contain rounded-full border-4 border-gray-300 p-1 bg-white shadow-md mb-4">
+                <div class="flex items-center space-x-4">
+                    <input type="file" id="organization-logo-upload" accept="image/*" class="hidden">
+                    <label for="organization-logo-upload" class="btn-primary cursor-pointer text-sm">
+                        Upload Logo
+                    </label>
+                    <button id="remove-logo-button" class="ml-2 px-3 py-2 bg-red-500 text-white rounded-md text-sm hover:bg-red-600 transition duration-200 hidden">Remove Logo</button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Max file size: 2MB. PNG, JPG, JPEG only.</p>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Profile Section -->
+                <div class="card p-6 border border-gray-200 rounded-lg shadow-sm">
+                    <h2 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-6">Your Profile</h2>
+                    <div id="profile-details" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-gray-700">
+                        <!-- Details will be loaded here by JavaScript -->
+                        <p><strong class="font-medium text-gray-900">Name:</strong> <span id="display-name"></span></p>
+                        <p><strong class="font-medium text-gray-900">Designation:</strong> <span id="display-designation"></span></p>
+                        <p><strong class="font-medium text-gray-900">Email:</strong> <span id="display-email"></span></p>
+                        <p><strong class="font-medium text-gray-900">Phone:</strong> <span id="display-phone"></span></p>
+                        <p><strong class="font-medium text-gray-900">Organization Name:</strong> <span id="display-organization-name"></span></p>
+                        <p><strong class="font-medium text-gray-900">Company Website:</strong> <span id="display-company-url"></span></p>
+                        <p><strong class="font-medium text-gray-900">Location:</strong> <span id="display-location"></span></p>
+                        <p><strong class="font-medium text-gray-900">Employee Size:</strong> <span id="display-employee-size"></span></p>
+                        <div class="md:col-span-2">
+                            <strong class="font-medium text-gray-900">Company Description:</strong>
+                            <p id="display-company-description" class="mt-1 text-justify"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logout Button -->
+                <div class="text-center mt-8">
+                    <a id="logout-button" href="register.html" class="btn-primary">
+                        Log Out
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loggedInUserEmail = localStorage.getItem('loggedInUser');
+            const logoutButton = document.getElementById('logout-button');
+            const organizationLogoUpload = document.getElementById('organization-logo-upload');
+            const organizationLogoDisplay = document.getElementById('organization-logo-display');
+            const removeLogoButton = document.getElementById('remove-logo-button');
+
+            // Function to load and display recruiter data
+            function loadRecruiterData() {
+                const recruiterDataString = localStorage.getItem(loggedInUserEmail);
+                if (recruiterDataString) {
+    const recruiterData = JSON.parse(recruiterDataString);
+    
+    // Store the user's name in localStorage
+    localStorage.setItem('username', recruiterData.name || 'User '); // Default to 'User ' if name is not available
+    // Populate the profile details
+    document.getElementById('display-name').textContent = recruiterData.name || 'N/A';
+                    // Populate the profile details
+                    document.getElementById('display-name').textContent = recruiterData.name || 'N/A';
+                    document.getElementById('display-designation').textContent = recruiterData.designation || 'N/A';
+                    document.getElementById('display-email').textContent = recruiterData.email || 'N/A';
+                    document.getElementById('display-phone').textContent = recruiterData.phone || 'N/A';
+                    document.getElementById('display-organization-name').textContent = recruiterData.organizationName || 'N/A';
+                    
+                    const companyUrlElement = document.getElementById('display-company-url');
+                    if (recruiterData.companyUrl) {
+                        companyUrlElement.innerHTML = `<a href="${recruiterData.companyUrl}" target="_blank" class="text-blue-600 hover:underline">${recruiterData.companyUrl}</a>`;
+                    } else {
+                        companyUrlElement.textContent = 'N/A';
+                    }
+
+                    document.getElementById('display-location').textContent = recruiterData.location || 'N/A';
+                    document.getElementById('display-employee-size').textContent = recruiterData.employeeSize || 'N/A';
+                    document.getElementById('display-company-description').textContent = recruiterData.companyDescription || 'N/A';
+
+                    // Display organization logo
+                    if (recruiterData.organizationLogo) {
+                        organizationLogoDisplay.src = recruiterData.organizationLogo;
+                        removeLogoButton.classList.remove('hidden');
+                    } else {
+                        organizationLogoDisplay.src = "https://placehold.co/120x120/E5E7EB/4B5563?text=Logo"; // Default placeholder
+                        removeLogoButton.classList.add('hidden');
+                    }
+
+                } else {
+                    console.error("Logged in user data not found in local storage.");
+                    localStorage.removeItem('loggedInUser'); // Clear potentially stale login
+                    // In a real application, you might redirect to a login/signup page here
+                    // window.location.href = './signup.html';
+                }
+            }
+
+            // Save organization logo to local storage
+            function saveOrganizationLogo(base64Image) {
+                const recruiterDataString = localStorage.getItem(loggedInUserEmail);
+                let recruiterData = {};
+                if (recruiterDataString) {
+                    recruiterData = JSON.parse(recruiterDataString);
+                }
+                recruiterData.organizationLogo = base64Image;
+                localStorage.setItem(loggedInUserEmail, JSON.stringify(recruiterData));
+                loadRecruiterData(); // Reload data to update display
+            }
+
+            // Handle file upload
+            organizationLogoUpload.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    // Validate file type and size
+                    const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+                    const maxSize = 2 * 1024 * 1024; // 2MB
+
+                    if (!validTypes.includes(file.type)) {
+                        alert('Invalid file type. Please upload a PNG, JPG, or JPEG image.');
+                        organizationLogoUpload.value = ''; // Clear the input
+                        return;
+                    }
+
+                    if (file.size > maxSize) {
+                        alert('File size exceeds 2MB. Please upload a smaller image.');
+                        organizationLogoUpload.value = ''; // Clear the input
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        saveOrganizationLogo(e.target.result); // Save base64 string
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Handle remove logo button click
+            removeLogoButton.addEventListener('click', () => {
+                const recruiterDataString = localStorage.getItem(loggedInUserEmail);
+                let recruiterData = {};
+                if (recruiterDataString) {
+                    recruiterData = JSON.parse(recruiterDataString);
+                }
+                delete recruiterData.organizationLogo; // Remove the logo property
+                localStorage.setItem(loggedInUserEmail, JSON.stringify(recruiterData));
+                organizationLogoDisplay.src = "https://placehold.co/120x120/E5E7EB/4B5563?text=Logo"; // Set back to default
+                removeLogoButton.classList.add('hidden'); // Hide remove button
+                organizationLogoUpload.value = ''; // Clear the file input
+            });
+
+
+            // Initial load of recruiter data
+            loadRecruiterData();
+
+            // Logout functionality
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('loggedInUser'); // Clear the logged-in user session
+                // In a real application, you might redirect to a login/signup page here
+                // window.location.href = './signup.html';
+            });
+        });
+    </script>
+</body>
+</html>

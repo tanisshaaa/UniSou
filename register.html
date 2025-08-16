@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiter Registration & Login</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8FAFC;
+        }
+        /* Style for password toggle icon */
+        .password-toggle-icon {
+            cursor: pointer;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-8">
+
+    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 w-full max-w-4xl border border-gray-200">
+
+        <!-- Form Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900">Recruiter Portal</h1>
+            <p id="form-subtitle" class="mt-2 text-lg text-gray-500">Create your account to start finding great talent.</p>
+        </div>
+        
+        <!-- Message Box for displaying success/error messages -->
+        <div id="message-box" class="hidden mb-4 p-4 rounded-lg text-sm text-center font-medium transition-all duration-300"></div>
+
+        <!-- User Info Display (Will be hidden initially, shown only if logged in) -->
+        <div id="user-info" class="hidden text-center">
+            <h2 class="text-2xl font-bold text-gray-800">Welcome back, <span id="user-email"></span>!</h2>
+            <p class="mt-2 text-gray-600">You are logged in.</p>
+            <button id="logout-button" class="mt-4 bg-red-600 text-white py-2 px-4 rounded-lg font-bold hover:bg-red-700 transition-colors duration-200">
+                Log Out
+            </button>
+        </div>
+
+        <!-- Registration Form -->
+        <form id="registration-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Personal & Contact Information Section -->
+            <div class="space-y-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 border-gray-200">Your Details</h2>
+
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                    <input type="text" id="name" name="name" placeholder="E.g., John Doe" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                </div>
+
+                <div>
+                    <label for="designation" class="block text-sm font-medium text-gray-700 mb-1">Your Designation</label>
+                    <input type="text" id="designation" name="designation" placeholder="E.g., Talent Acquisition Manager" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                </div>
+
+                <div>
+                    <label for="reg-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <input type="email" id="reg-email" name="reg-email" placeholder="E.g., email@company.com" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="E.g., +1 (555) 123-4567" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                </div>
+                
+                <div>
+                    <label for="reg-password" class="block text-sm font-medium text-gray-700 mb-1">Create Password</label>
+                    <div class="relative">
+                        <input type="password" id="reg-password" name="reg-password" placeholder="Min. 8 characters" required
+                               class="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                        <span class="password-toggle-icon" onclick="togglePasswordVisibility('reg-password', 'reg')">
+                            <!-- Eye icon (visible) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="icon-eye-reg" class="h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <!-- Eye slash icon (hidden) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="icon-eye-slash-reg" class="hidden h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7A10.05 10.05 0 0115 5.175m4.334 4.334a10.05 10.05 0 01-.643 2.115l-1.39 1.39M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c.184 0 .367.014.55.04M12 19c.184 0 .367-.014.55-.04M12 19c4.478 0 8.268-2.943 9.542-7-1.274-4.057-5.064-7-9.542-7z" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                    <div class="relative">
+                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Re-enter your password" required
+                               class="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                        <span class="password-toggle-icon" onclick="togglePasswordVisibility('confirm-password', 'confirm')">
+                            <!-- Eye icon (visible) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="icon-eye-confirm" class="h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            <!-- Eye slash icon (hidden) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" id="icon-eye-slash-confirm" class="hidden h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7A10.05 10.05 0 0115 5.175m4.334 4.334a10.05 10.05 0 01-.643 2.115l-1.39 1.39M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c.184 0 .367.014.55.04M12 19c.184 0 .367-.014.55-.04M12 19c4.478 0 8.268-2.943 9.542-7-1.274-4.057-5.064-7-9.542-7z" />
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Company Information Section -->
+            <div class="space-y-6">
+                <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 border-gray-200">Company Details</h2>
+
+                <div>
+                    <label for="organization-name" class="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+                    <input type="text" id="organization-name" name="organization-name" placeholder="E.g., Global Solutions Inc." required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                </div>
+
+                <div>
+                    <label for="company-url" class="block text-sm font-medium text-gray-700 mb-1">Company Website <span class="text-gray-400">(Optional)</span></label>
+                    <input type="url" id="company-url" name="company-url" placeholder="E.g., https://www.company.com"
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                </div>
+
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location (City, Country)</label>
+                    <input type="text" id="location" name="location" placeholder="E.g., San Francisco, USA" required
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                </div>
+
+                <div>
+                    <label for="employee-size" class="block text-sm font-medium text-gray-700 mb-1">Employee Size</label>
+                    <select id="employee-size" name="employee-size" required
+                                 class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200 bg-white">
+                        <option value="" disabled selected>Select employee size</option>
+                        <option value="1-10">1-10 employees</option>
+                        <option value="11-50">11-50 employees</option>
+                        <option value="51-200">51-200 employees</option>
+                        <option value="201-500">201-500 employees</option>
+                        <option value="501-1000">501-1000 employees</option>
+                        <option value="1000+">1000+ employees</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="company-description" class="block text-sm font-medium text-gray-700 mb-1">Company Description</label>
+                    <textarea id="company-description" name="company-description" rows="3" placeholder="Tell us about your company and what you do."
+                                  class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"></textarea>
+                </div>
+
+            </div>
+
+            <!-- Form Footer (Full width for submit button and checkbox) -->
+            <div class="md:col-span-2 mt-4">
+                <div class="flex items-center mb-6">
+                    <input id="terms-and-conditions" name="terms-and-conditions" type="checkbox" required
+                           class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                    <label for="terms-and-conditions" class="ml-2 block text-sm text-gray-900">
+                        I agree to the <a href="#" class="text-indigo-600 hover:underline">Terms & Conditions</a>
+                    </label>
+                </div>
+
+                <button type="submit"
+                                 class="w-full bg-indigo-600 text-white py-4 px-6 rounded-lg font-bold text-lg hover:bg-indigo-700 transition-colors duration-200 shadow-md">
+                    Create Account
+                </button>
+            </div>
+            
+            <div class="md:col-span-2 mt-4 text-center">
+                <a href="index.html" id="toggle-login" class="text-indigo-600 hover:underline">Already have an account? Log In</a>
+            </div>
+        </form>
+
+        <!-- Login Form -->
+        <!-- <form id="login-form" class="hidden grid grid-cols-1 gap-6">
+            <h2 class="text-2xl font-bold text-gray-800 border-b pb-2 border-gray-200">Log In</h2>
+            
+            <div>
+                <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input type="email" id="login-email" name="login-email" placeholder="E.g., email@company.com" required
+                       class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+            </div>
+
+            <div>
+                <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <div class="relative">
+                    <input type="password" id="login-password" name="login-password" placeholder="Enter your password" required
+                           class="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200"> -->
+                    <!-- <span class="password-toggle-icon" onclick="togglePasswordVisibility('login-password', 'login')"> -->
+                        <!-- Eye icon (visible) -->
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" id="icon-eye-login" class="h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg> -->
+                        <!-- Eye slash icon (hidden) -->
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" id="icon-eye-slash-login" class="hidden h-6 w-6 text-gray-500 hover:text-gray-700 transition-colors duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7A10.05 10.05 0 0115 5.175m4.334 4.334a10.05 10.05 0 01-.643 2.115l-1.39 1.39M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c.184 0 .367.014.55.04M12 19c.184 0 .367-.014.55-.04M12 19c4.478 0 8.268-2.943 9.542-7-1.274-4.057-5.064-7-9.542-7z" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <button type="submit"
+                             class="w-full bg-indigo-600 text-white py-4 px-6 rounded-lg font-bold text-lg hover:bg-indigo-700 transition-colors duration-200 shadow-md mt-4">
+                Log In
+            </button> -->
+            
+            <div class="mt-4 text-center">
+                <a href="#" id="toggle-register" class="text-indigo-600 hover:underline">Don't have an account? Sign Up</a>
+            </div>
+        </form>
+
+        <!-- Verification Message and Link -->
+        <div id="verification-message" class="hidden p-6 text-center">
+            <h2 class="text-2xl font-bold text-gray-800">Please Verify Your Email</h2>
+            <p class="mt-2 text-lg text-gray-600">A verification link has been sent to <strong id="verification-email"></strong>.</p>
+            <p class="mt-4 text-sm text-gray-500">For this demo, click the button below to simulate the verification.</p>
+            <button id="verification-button" class="mt-6 bg-green-600 text-white py-3 px-6 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors duration-200 shadow-md">
+                Simulate Verification
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Toggles the visibility of password fields
+        function togglePasswordVisibility(fieldId, formType) {
+            const passwordField = document.getElementById(fieldId);
+            const eyeIcon = document.getElementById(`icon-eye-${formType}`);
+            const eyeSlashIcon = document.getElementById(`icon-eye-slash-${formType}`);
+
+            if (passwordField && eyeIcon && eyeSlashIcon) {
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    eyeIcon.classList.add('hidden');
+                    eyeSlashIcon.classList.remove('hidden');
+                } else {
+                    passwordField.type = "password";
+                    eyeIcon.classList.remove('hidden');
+                    eyeSlashIcon.classList.add('hidden');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // UI elements
+            const messageBox = document.getElementById('message-box');
+            const toggleLoginLink = document.getElementById('toggle-login');
+            const toggleRegisterLink = document.getElementById('toggle-register');
+            const logoutButton = document.getElementById('logout-button');
+            const registrationForm = document.getElementById('registration-form');
+            const loginForm = document.getElementById('login-form');
+            const userInfoDiv = document.getElementById('user-info');
+            const userEmailSpan = document.getElementById('user-email');
+            const formSubtitle = document.getElementById('form-subtitle');
+            const verificationMessageDiv = document.getElementById('verification-message');
+            const verificationEmailSpan = document.getElementById('verification-email');
+            const verificationButton = document.getElementById('verification-button');
+
+            // Helper function to show messages in the message box
+            function showMessage(text, type) {
+                if (messageBox) {
+                    messageBox.textContent = text;
+                    // Reset classes to avoid stacking
+                    messageBox.className = "mb-4 p-4 rounded-lg text-sm text-center font-medium transition-all duration-300";
+                    messageBox.classList.remove('hidden');
+                    if (type === 'success') {
+                        messageBox.classList.add('bg-green-100', 'text-green-800');
+                    } else if (type === 'error') {
+                        messageBox.classList.add('bg-red-100', 'text-red-800');
+                    } else { // 'info'
+                        messageBox.classList.add('bg-blue-100', 'text-blue-800');
+                    }
+                }
+            }
+
+            // Function to show the login form and hide others
+            function showLoginForm() {
+                registrationForm.classList.add('hidden');
+                verificationMessageDiv.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+                userInfoDiv.classList.add('hidden');
+                formSubtitle.textContent = 'Log in to your account.';
+            }
+
+            // Function to show the registration form and hide others
+            function showRegistrationForm() {
+                registrationForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                userInfoDiv.classList.add('hidden');
+                verificationMessageDiv.classList.add('hidden');
+                formSubtitle.textContent = 'Create your account to start finding great talent.';
+            }
+
+            // Function to check login status and update the UI
+            function checkLoginStatus() {
+                const loggedInUserEmail = localStorage.getItem('loggedInUser');
+
+                if (loggedInUserEmail) {
+                    // User is logged in, show welcome message and hide forms
+                    if (userEmailSpan) userEmailSpan.textContent = loggedInUserEmail;
+                    if (userInfoDiv) userInfoDiv.classList.remove('hidden');
+                    if (registrationForm) registrationForm.classList.add('hidden');
+                    if (loginForm) loginForm.classList.add('hidden');
+                    if (verificationMessageDiv) verificationMessageDiv.classList.add('hidden');
+                    if (messageBox) messageBox.classList.add('hidden');
+                    if (formSubtitle) formSubtitle.textContent = 'Recruiter Portal';
+                } else {
+                    // User is logged out, show registration form and hide others
+                    showRegistrationForm();
+                    if (messageBox) messageBox.classList.add('hidden');
+                }
+            }
+            
+            // Initial check for login status on page load
+            checkLoginStatus();
+
+            // Event listener to toggle to the login form
+            if (toggleLoginLink) {
+                toggleLoginLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showLoginForm();
+                    if (messageBox) messageBox.classList.add('hidden');
+                });
+            }
+
+            // Event listener to toggle to the registration form
+            if (toggleRegisterLink) {
+                toggleRegisterLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showRegistrationForm();
+                    if (messageBox) messageBox.classList.add('hidden');
+                });
+            }
+
+            // Logout handler
+            if (logoutButton) {
+                logoutButton.addEventListener('click', () => {
+                    localStorage.removeItem('loggedInUser');
+                    checkLoginStatus(); // Update UI to show login/register forms
+                    showMessage("You have been logged out.", 'info');
+                });
+            }
+
+            // Registration form submission handler
+            if (registrationForm) {
+                registrationForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    showMessage("Creating account...", 'info');
+
+                    const email = document.getElementById('reg-email').value;
+                    const password = document.getElementById('reg-password').value;
+                    const confirmPassword = document.getElementById('confirm-password').value;
+
+                    // Password validation logic
+                    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])(?=.{8,})/;
+                    if (!passwordRegex.test(password)) {
+                        showMessage('Password must be at least 8 characters long and contain a mix of uppercase letters, lowercase letters, numbers, and special characters.', 'error');
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        showMessage('Passwords do not match.', 'error');
+                        return;
+                    }
+
+                    // Check if email already exists
+                    if (localStorage.getItem(email)) {
+                        showMessage("This email is already registered. Please log in.", 'error');
+                        // Automatically switch to the login form for existing users
+                        setTimeout(showLoginForm, 500);
+                        return;
+                    }
+
+                    // Gather all form data
+                    const recruiterData = {
+                        name: document.getElementById('name').value,
+                        designation: document.getElementById('designation').value,
+                        phone: document.getElementById('phone').value,
+                        email: email,
+                        // WARNING: Storing passwords in localStorage is not secure. This is for demonstration purposes only.
+                        password: password,
+                        organizationName: document.getElementById('organization-name').value,
+                        companyUrl: document.getElementById('company-url').value,
+                        location: document.getElementById('location').value,
+                        employeeSize: document.getElementById('employee-size').value,
+                        companyDescription: document.getElementById('company-description').value,
+                        isVerified: false // Add isVerified flag
+                    };
+
+                    // Store data in local storage
+                    try {
+                        localStorage.setItem(email, JSON.stringify(recruiterData));
+                        showMessage("Account created successfully!", 'success');
+                        registrationForm.reset();
+                        
+                        // Switch to the verification message screen
+                        registrationForm.classList.add('hidden');
+                        verificationMessageDiv.classList.remove('hidden');
+                        verificationEmailSpan.textContent = email;
+
+                    } catch (error) {
+                        console.error("Local storage save error:", error);
+                        showMessage("Could not save your data. Please try again.", 'error');
+                    }
+                });
+            }
+
+            // Simulated verification function
+            function simulateVerification(email) {
+                try {
+                    const storedData = localStorage.getItem(email);
+                    if (storedData) {
+                        const recruiter = JSON.parse(storedData);
+                        recruiter.isVerified = true;
+                        localStorage.setItem(email, JSON.stringify(recruiter));
+                        showMessage("Account verified successfully! You can now log in.", 'success');
+                        // Switch to login form
+                        showLoginForm();
+                        document.getElementById('login-email').value = email; // Pre-fill email for convenience
+                    } else {
+                        showMessage("Verification failed. User not found.", 'error');
+                    }
+                } catch (error) {
+                    console.error("Verification error:", error);
+                    showMessage("An error occurred during verification. Please try again.", 'error');
+                }
+            }
+
+            // Event listener for the verification button
+            if (verificationButton) {
+                verificationButton.addEventListener('click', () => {
+                    const emailToVerify = verificationEmailSpan.textContent;
+                    if (emailToVerify) {
+                        simulateVerification(emailToVerify);
+                    } else {
+                        showMessage("Could not find the email for verification.", 'error');
+                    }
+                });
+            }
+
+            // Login form submission handler
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    showMessage("Logging in...", 'info');
+
+                    const email = document.getElementById('login-email').value;
+                    const password = document.getElementById('login-password').value;
+
+                    const storedData = localStorage.getItem(email);
+
+                    if (storedData) {
+                        const recruiter = JSON.parse(storedData);
+                        // Check if account is verified before logging in
+                        if (!recruiter.isVerified) {
+                             showMessage("Please verify your account before logging in. Check the verification message.", 'error');
+                             return;
+                        }
+
+                        if (recruiter.password === password) {
+                            localStorage.setItem('loggedInUser', email);
+                            showMessage("Login successful!", 'success');
+                            loginForm.reset();
+                            checkLoginStatus(); // Update UI to show user info
+                        } else {
+                            showMessage("Invalid email or password.", 'error');
+                        }
+                    } else {
+                        showMessage("Invalid email or password.", 'error');
+                    }
+                });
+            }
+        });
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polished Job Application Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e5e7eb; /* A slightly darker gray for the background */
+        }
+        .form-container {
+            background-color: #ffffff; /* White background for the form */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .file-upload-box {
+            border: 2px dashed #9ca3af; /* Darker dashed border for better contrast */
+            background-color: #f9fafb; /* A light gray background */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 280px; /* Adjusted width for a better feel */
+            height: 180px; /* Adjusted height for a more balanced look */
+        }
+        .file-upload-box:hover {
+            background-color: #f3f4f6; /* Even lighter gray on hover */
+            border-color: #6366f1; /* Indigo border on hover */
+        }
+        .message-box {
+            display: none;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12 flex items-center justify-center min-h-screen">
+
+    <div class="form-container container mx-auto p-8 space-y-8 max-w-4xl">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900">Job Application</h1>
+            <p class="mt-2 text-lg text-gray-600">Please provide your details below to apply for a position.</p>
+        </div>
+        
+        <div id="message-box" class="message-box p-4 rounded-md text-center font-medium"></div>
+
+        <form id="application-form" class="space-y-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-1">
+                    <label for="first-name" class="block text-sm font-semibold text-gray-700">Full Name <span class="text-red-500">*</span></label>
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <input type="text" name="first-name" id="first-name" autocomplete="given-name" class="flex-1 min-w-[150px] block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="First Name" required>
+                        <input type="text" name="last-name" id="last-name" autocomplete="family-name" class="flex-1 min-w-[150px] block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="Last Name" required>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="email" class="block text-sm font-semibold text-gray-700">Email Address <span class="text-red-500">*</span></label>
+                    <input id="email" name="email" type="email" autocomplete="email" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="example@company.com" required>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="phone-number" class="block text-sm font-semibold text-gray-700">Phone Number <span class="text-red-500">*</span></label>
+                    <input id="phone-number" name="phone-number" type="tel" autocomplete="tel" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="(000) 000-0000" required>
+                </div>
+
+                <div class="space-y-1">
+                    <label for="applied-position" class="block text-sm font-semibold text-gray-700">Position Applied For</label>
+                    <input type="text" name="applied-position" id="applied-position" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., Software Engineer">
+                </div>
+            </div>
+            
+            <hr class="border-gray-200">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-1">
+                    <label for="applicant-type" class="block text-sm font-semibold text-gray-700">Applicant Type <span class="text-red-500">*</span></label>
+                    <select id="applicant-type" name="applicant-type" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" required>
+                        <option value="">Select...</option>
+                        <option value="fresher">Fresher</option>
+                        <option value="experienced">Experienced</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="dynamic-fields" class="space-y-6">
+                <div id="fresher-fields" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                    <div class="space-y-1">
+                        <label for="fresher-cgpa" class="block text-sm font-semibold text-gray-700">Current CGPA / Percentage <span class="text-red-500">*</span></label>
+                        <input type="text" name="fresher-cgpa" id="fresher-cgpa" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., 8.5 / 85%">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="fresher-college" class="block text-sm font-semibold text-gray-700">College / University Name <span class="text-red-500">*</span></label>
+                        <input type="text" name="fresher-college" id="fresher-college" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., University of Technology">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="fresher-degree" class="block text-sm font-semibold text-gray-700">Degree & Specialization <span class="text-red-500">*</span></label>
+                        <input type="text" name="fresher-degree" id="fresher-degree" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., B.Tech in Computer Science">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="fresher-availability" class="block text-sm font-semibold text-gray-700">Availability to Join <span class="text-red-500">*</span></label>
+                        <input type="text" name="fresher-availability" id="fresher-availability" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., Immediately / From July 2024">
+                    </div>
+                </div>
+
+                <div id="experienced-fields" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                    <div class="space-y-1">
+                        <label for="experienced-current-ctc" class="block text-sm font-semibold text-gray-700">Current CTC (in LPA) <span class="text-red-500">*</span></label>
+                        <input type="number" step="0.1" name="experienced-current-ctc" id="experienced-current-ctc" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., 10">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="experienced-expected-ctc" class="block text-sm font-semibold text-gray-700">Expected CTC (in LPA) <span class="text-red-500">*</span></label>
+                        <input type="number" step="0.1" name="experienced-expected-ctc" id="experienced-expected-ctc" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., 12">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="experienced-notice-period" class="block text-sm font-semibold text-gray-700">Notice Period (in days) <span class="text-red-500">*</span></label>
+                        <input type="number" name="experienced-notice-period" id="experienced-notice-period" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., 30">
+                    </div>
+                    <div class="space-y-1">
+                        <label for="experienced-availability" class="block text-sm font-semibold text-gray-700">Availability to Join <span class="text-red-500">*</span></label>
+                        <input type="text" name="experienced-availability" id="experienced-availability" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., Immediately / After notice period">
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-200">
+            
+            <div class="space-y-1">
+                <label class="block text-sm font-semibold text-gray-700">Social Profiles</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <input type="url" name="linkedin-profile" id="linkedin-profile" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="LinkedIn Profile URL">
+                    <input type="url" name="github-profile" id="github-profile" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="GitHub Profile URL">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-1">
+                    <label for="skills" class="block text-sm font-semibold text-gray-700">Skills</label>
+                    <textarea id="skills" name="skills" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., Python, JavaScript, Tailwind CSS"></textarea>
+                </div>
+                <div class="space-y-1">
+                    <label for="language-proficiency" class="block text-sm font-semibold text-gray-700">Language Proficiency</label>
+                    <textarea id="language-proficiency" name="language-proficiency" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="e.g., English (Fluent), Spanish (Conversational)"></textarea>
+                </div>
+            </div>
+
+            <hr class="border-gray-200">
+
+            <div class="space-y-1">
+                <label for="cover-letter" class="block text-sm font-semibold text-gray-700">Cover Letter</label>
+                <textarea id="cover-letter" name="cover-letter" rows="5" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-gray-900 px-4 py-2 border" placeholder="Please do not exceed 200 words."></textarea>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-6 justify-center">
+                <div class="flex-1 space-y-2">
+                    <label for="resume-upload" class="block text-sm font-semibold text-gray-700">Upload Resume <span class="text-red-500">*</span></label>
+                    <p id="resume-message" class="text-sm font-medium hidden"></p>
+                    <div class="flex flex-col justify-center items-center file-upload-box rounded-xl transition-all duration-300">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m-8-4h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex text-sm mt-2 text-gray-600">
+                            <label for="resume-upload" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2">
+                                <span>Upload a File</span>
+                                <input id="resume-upload" name="resume-upload" type="file" class="sr-only" accept=".pdf" required>
+                            </label>
+                            <p class="pl-1">or drag and drop</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 space-y-2">
+                    <label for="other-docs-upload" class="block text-sm font-semibold text-gray-700">Other Documents</label>
+                    <p id="other-docs-message" class="text-sm font-medium hidden"></p>
+                    <div class="flex flex-col justify-center items-center file-upload-box rounded-xl transition-all duration-300">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m-8-4h.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <div class="flex text-sm mt-2 text-gray-600">
+                            <label for="other-docs-upload" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2">
+                                <span>Upload a File</span>
+                                <input id="other-docs-upload" name="other-docs-upload" type="file" class="sr-only">
+                            </label>
+                            <p class="pl-1">or drag and drop</p>
+                        </div>
+                        <p class="mt-2 text-xs text-gray-500">e.g., certificates, diplomas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center">
+                <button id="apply-button" type="submit" class="w-full md:w-1/2 inline-flex justify-center rounded-lg border border-transparent bg-indigo-600 py-3 px-8 text-xl font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-300">
+                    Apply
+                </button>
+            </div>
+        </form>
+
+        <div id="customAlert" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+            <div class="relative top-20 mx-auto p-5 border w-96 shadow-xl rounded-xl bg-white animate-fade-in-down">
+                <div class="mt-3 text-center">
+                    <svg class="mx-auto h-12 w-12 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 id="alertTitle" class="text-lg leading-6 font-semibold text-gray-900 mt-4">Application Submitted</h3>
+                    <div class="mt-2 px-7 py-3">
+                        <p id="alertMessage" class="text-sm text-gray-500">Your application has been successfully submitted!</p>
+                    </div>
+                    <div class="items-center px-4 py-3">
+                        <button id="closeAlertBtn" class="px-4 py-2 bg-indigo-600 text-white text-base font-medium rounded-md w-full shadow-md hover:bg-indigo-700 transition-colors duration-300">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // DOM elements
+        const form = document.getElementById('application-form');
+        const applyButton = document.getElementById('apply-button');
+        const applicantTypeSelect = document.getElementById('applicant-type');
+        const fresherFields = document.getElementById('fresher-fields');
+        const experiencedFields = document.getElementById('experienced-fields');
+        const fresherInputs = fresherFields.querySelectorAll('input');
+        const experiencedInputs = experiencedFields.querySelectorAll('input');
+        const resumeMessage = document.getElementById('resume-message');
+        const otherDocsMessage = document.getElementById('other-docs-message');
+
+        // Function to create a custom alert modal
+        function showCustomAlert(title, message) {
+            document.getElementById('alertTitle').textContent = title;
+            document.getElementById('alertMessage').textContent = message;
+            document.getElementById('customAlert').classList.remove('hidden');
+        }
+
+        document.getElementById('closeAlertBtn').addEventListener('click', () => {
+            document.getElementById('customAlert').classList.add('hidden');
+        });
+
+        // Function to show a temporary message
+        function showMessage(message, type) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            if (type === 'success') {
+                messageBox.className = 'bg-green-500 p-4 rounded-md text-center text-white font-medium';
+            } else if (type === 'error') {
+                messageBox.className = 'bg-red-500 p-4 rounded-md text-center text-white font-medium';
+            } else if (type === 'loading') {
+                messageBox.className = 'bg-blue-500 p-4 rounded-md text-center text-white font-medium';
+            }
+        }
+        
+        // Handle file-to-base64 conversion for local storage
+        const fileToBase64 = (file) => new Promise((resolve, reject) => {
+            if (!file) {
+                return resolve(null);
+            }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+
+        // Function to set required status on inputs
+        function setRequired(inputs, required) {
+            inputs.forEach(input => {
+                input.required = required;
+            });
+        }
+        
+        // Handle applicant type change
+        applicantTypeSelect.addEventListener('change', (e) => {
+            const type = e.target.value;
+
+            // Hide all dynamic fields
+            fresherFields.classList.add('hidden');
+            experiencedFields.classList.add('hidden');
+
+            // Remove 'required' from all dynamic inputs
+            setRequired(fresherInputs, false);
+            setRequired(experiencedInputs, false);
+
+            if (type === 'fresher') {
+                fresherFields.classList.remove('hidden');
+                setRequired(fresherInputs, true);
+            } else if (type === 'experienced') {
+                experiencedFields.classList.remove('hidden');
+                setRequired(experiencedInputs, true);
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            showMessage("Submitting application...", 'loading');
+            applyButton.disabled = true;
+
+            try {
+                const resumeInput = document.getElementById('resume-upload');
+                const otherDocsInput = document.getElementById('other-docs-upload');
+                const resumeFile = resumeInput.files[0];
+                const otherDocFile = otherDocsInput.files[0];
+                
+                if (resumeFile && resumeFile.type !== 'application/pdf') {
+                    showMessage("Please upload a PDF file for your resume.", 'error');
+                    applyButton.disabled = false;
+                    return;
+                }
+                
+                const resumeData = resumeFile ? await fileToBase64(resumeFile) : null;
+                const otherDocsData = otherDocFile ? await fileToBase64(otherDocFile) : null;
+                
+                const formData = new FormData(document.getElementById('application-form'));
+                const applicationData = {
+                    firstName: formData.get('first-name'),
+                    lastName: formData.get('last-name'),
+                    email: formData.get('email'),
+                    phoneNumber: formData.get('phone-number'),
+                    appliedPosition: formData.get('applied-position'),
+                    applicantType: formData.get('applicant-type'),
+                    skills: formData.get('skills'),
+                    languageProficiency: formData.get('language-proficiency'),
+                    linkedinProfile: formData.get('linkedin-profile'),
+                    githubProfile: formData.get('github-profile'),
+                    coverLetter: formData.get('cover-letter'),
+                    resumeName: resumeFile?.name || null,
+                    resumeData: resumeData,
+                    otherDocsName: otherDocFile?.name || null,
+                    otherDocsData: otherDocsData,
+                    timestamp: new Date().toISOString()
+                };
+
+                const applicantType = formData.get('applicant-type');
+                if (applicantType === 'fresher') {
+                    applicationData.fresherDetails = {
+                        cgpa: formData.get('fresher-cgpa'),
+                        college: formData.get('fresher-college'),
+                        degree: formData.get('fresher-degree'),
+                        availability: formData.get('fresher-availability')
+                    };
+                } else if (applicantType === 'experienced') {
+                    applicationData.experiencedDetails = {
+                        currentCTC: formData.get('experienced-current-ctc'),
+                        expectedCTC: formData.get('experienced-expected-ctc'),
+                        noticePeriod: formData.get('experienced-notice-period'),
+                        availability: formData.get('experienced-availability')
+                    };
+                }
+
+                const storedApplications = localStorage.getItem('talentApplications');
+                const applications = storedApplications ? JSON.parse(storedApplications) : [];
+                applications.push(applicationData);
+                localStorage.setItem('talentApplications', JSON.stringify(applications));
+
+                showMessage("Application submitted successfully!", 'success');
+                showCustomAlert("Application Submitted", "Your application has been successfully submitted to your browser's local storage.");
+                form.reset();
+                applicantTypeSelect.dispatchEvent(new Event('change'));
+            } catch (error) {
+                console.error("Error submitting application: ", error);
+                if (error.name === 'QuotaExceededError') {
+                    showMessage("Submission failed: Your resume is too large for local storage.", 'error');
+                    showCustomAlert("Submission Failed", "Your resume is too large. Local storage has a limited size. Please try a smaller file.");
+                } else {
+                    showMessage("An unknown error occurred. Please try again.", 'error');
+                    showCustomAlert("Submission Failed", "An error occurred while submitting your application. Please try again.");
+                }
+            } finally {
+                applyButton.disabled = false;
+            }
+        });
+        
+        // File input change handlers
+        document.getElementById('resume-upload').addEventListener('change', function () {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                if (file.type === 'application/pdf') {
+                    resumeMessage.textContent = `File selected: "${file.name}"`;
+                    resumeMessage.classList.remove('hidden', 'text-red-500');
+                    resumeMessage.classList.add('text-green-600');
+                } else {
+                    resumeMessage.textContent = "Please upload a PDF file.";
+                    resumeMessage.classList.remove('hidden', 'text-green-600');
+                    resumeMessage.classList.add('text-red-500');
+                }
+            } else {
+                resumeMessage.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('other-docs-upload').addEventListener('change', function () {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                otherDocsMessage.textContent = `File selected: "${file.name}"`;
+                otherDocsMessage.classList.remove('hidden');
+            } else {
+                otherDocsMessage.classList.add('hidden');
+            }
+        });
+
+        // Initialize the form to hide dynamic fields on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            applicantTypeSelect.dispatchEvent(new Event('change'));
+        });
+    </script>
+</body>
+</html>
